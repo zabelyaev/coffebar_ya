@@ -5,11 +5,14 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtSql import QSqlDatabase, QSqlTableModel, QSqlQuery
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView, QHeaderView, QWidget, QComboBox, QAbstractItemView
 
+from addEditCoffeeForm import Ui_AddEditCoffeeWindow
+from mainUI import Ui_MainWindow
 
-class MainWindow(QMainWindow):
+
+class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
+        self.setupUi(self)
 
         self.model = None
         self.row = None
@@ -45,7 +48,7 @@ class MainWindow(QMainWindow):
     def delBtnClick(self):
         if self.model is not None and self.row is not None:
             db = QSqlDatabase.addDatabase('QSQLITE')
-            db.setDatabaseName('coffee.sqlite')
+            db.setDatabaseName('data/coffee.sqlite')
             db.open()
 
             model = QSqlTableModel(self, db)
@@ -66,7 +69,7 @@ class MainWindow(QMainWindow):
     # функция для обновления данных в Tabel View
     def updateTableView(self):
         db = QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName('coffee.sqlite')
+        db.setDatabaseName('data/coffee.sqlite')
         db.open()
 
         model = QSqlTableModel(self, db)
@@ -91,10 +94,10 @@ class MainWindow(QMainWindow):
 
 
 # окно добавления/редактирования
-class AddEditWindow(QMainWindow):
+class AddEditWindow(QMainWindow, Ui_AddEditCoffeeWindow):
     def __init__(self, parent=None, model=None, row=None):
         super(AddEditWindow, self).__init__(parent)
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
 
         self.showMaximized()
         self.show()
@@ -153,7 +156,7 @@ class AddEditWindow(QMainWindow):
 
     def addEditBtnClick(self):
         db = QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName('coffee.sqlite')
+        db.setDatabaseName('data/coffee.sqlite')
         db.open()
 
         data = self.getDataFromForm()
