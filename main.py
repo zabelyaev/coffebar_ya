@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PyQt5 import uic
@@ -71,6 +72,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         db = QSqlDatabase.addDatabase('QSQLITE')
         db.setDatabaseName('data/coffee.sqlite')
         db.open()
+
+        # для релиза (создаем БД если ее не существовало)
+        query = QSqlQuery()
+        query.exec_(f'''CREATE TABLE IF NOT EXISTS coffee 
+                        (
+                            ID                INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                            title             TEXT    NOT NULL,
+                            roasting          TEXT    NOT NULL,
+                            is_ground         NUMERIC NOT NULL,
+                            toast_description TEXT,
+                            price             INTEGER NOT NULL,
+                            weight            INTEGER NOT NULL
+                        );
+                    ''')
 
         model = QSqlTableModel(self, db)
         model.setTable('coffee')
@@ -192,6 +207,11 @@ class AddEditWindow(QMainWindow, Ui_AddEditCoffeeWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    # для релиза (создаем папку в которой будет БД)
+    if not os.path.exists('data'):
+        os.makedirs('data')
+
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
